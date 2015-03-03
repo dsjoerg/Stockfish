@@ -1,0 +1,6 @@
+*.o
+*~
+.depend
+stockfish
+journal.txt
+*.html
