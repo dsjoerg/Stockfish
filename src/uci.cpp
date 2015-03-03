@@ -68,6 +68,8 @@ namespace {
         return;
 
     pos.set(fen, Options["UCI_Chess960"], Threads.main());
+    sync_cout << pos.standardValue(WHITE) << " " << pos.standardValue(BLACK) << " " << pos.game_phase() << sync_endl;
+
     SetupStates = Search::StateStackPtr(new std::stack<StateInfo>());
 
     // Parse move list (if any)

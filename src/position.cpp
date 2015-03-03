@@ -38,6 +38,8 @@ Value PieceValue[PHASE_NB][PIECE_NB] = {
 { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg },
 { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg } };
 
+Value PieceStandardValue[PIECE_NB] = { VALUE_ZERO, PawnValueStandard, KnightValueStandard, BishopValueStandard, RookValueStandard, QueenValueStandard };
+
 namespace Zobrist {
 
   Key psq[COLOR_NB][PIECE_TYPE_NB][SQUARE_NB];
@@ -397,6 +399,14 @@ void Position::set_state(StateInfo* si) const {
   for (Color c = WHITE; c <= BLACK; ++c)
       for (PieceType pt = KNIGHT; pt <= QUEEN; ++pt)
           si->nonPawnMaterial[c] += pieceCount[c][pt] * PieceValue[MG][pt];
+}
+
+
+int Position::standardValue(Color c) {
+  int value = 0;
+  for (PieceType pt = PAWN; pt <= QUEEN; ++pt)
+    value += pieceCount[c][pt] * PieceStandardValue[pt];
+  return value;
 }
 
 
