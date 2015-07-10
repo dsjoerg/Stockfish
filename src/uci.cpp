@@ -145,7 +145,7 @@ void UCI::loop(int argc, char* argv[]) {
 
   Position pos(StartFEN, false, Threads.main()); // The root position
   string token, cmd;
-  bool went_once = false;
+  bool die_after_eval = false;
 
   for (int i = 1; i < argc; ++i)
       cmd += std::string(argv[i]) + " ";
@@ -184,7 +184,11 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "go")         {
         go(pos, is);
         Threads.wait_for_think_finished();
-        went_once = true;
+      }
+      else if (token == "godie")         {
+        go(pos, is);
+        Threads.wait_for_think_finished();
+        die_after_eval = true;
       }
       else if (token == "position")   position(pos, is);
       else if (token == "setoption")  setoption(is);
@@ -208,7 +212,7 @@ void UCI::loop(int argc, char* argv[]) {
       else
           sync_cout << "Unknown command: " << cmd << sync_endl;
 
-  } while (!went_once && token != "quit" && argc == 1); // Passed args have one-shot behaviour
+  } while (!die_after_eval && token != "quit" && argc == 1); // Passed args have one-shot behaviour
 
   Threads.wait_for_think_finished(); // Cannot quit whilst the search is running
 }
