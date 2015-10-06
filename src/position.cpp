@@ -38,6 +38,8 @@ Value PieceValue[PHASE_NB][PIECE_NB] = {
 { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg },
 { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg } };
 
+Value PieceStandardValue[PIECE_NB] = { VALUE_ZERO, PawnValueStandard, KnightValueStandard, BishopValueStandard, RookValueStandard, QueenValueStandard };
+
 namespace Zobrist {
 
   Key psq[COLOR_NB][PIECE_TYPE_NB][SQUARE_NB];
@@ -165,12 +167,13 @@ void Position::init() {
       PieceValue[MG][make_piece(BLACK, pt)] = PieceValue[MG][pt];
       PieceValue[EG][make_piece(BLACK, pt)] = PieceValue[EG][pt];
 
-      Score v = make_score(PieceValue[MG][pt], PieceValue[EG][pt]);
+      //      Score v = make_score(PieceValue[MG][pt], PieceValue[EG][pt]);
+      Score v = make_score(100 * PieceStandardValue[pt], 100 * PieceStandardValue[pt]);
 
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {
-         psq[WHITE][pt][ s] =  (v + PSQT[pt][s]);
-         psq[BLACK][pt][~s] = -(v + PSQT[pt][s]);
+        psq[WHITE][pt][ s] =  v;
+        psq[BLACK][pt][~s] = -v;
       }
   }
 }
@@ -397,6 +400,14 @@ void Position::set_state(StateInfo* si) const {
   for (Color c = WHITE; c <= BLACK; ++c)
       for (PieceType pt = KNIGHT; pt <= QUEEN; ++pt)
           si->nonPawnMaterial[c] += pieceCount[c][pt] * PieceValue[MG][pt];
+}
+
+
+int Position::standardValue(Color c) {
+  int value = 0;
+  for (PieceType pt = PAWN; pt <= QUEEN; ++pt)
+    value += pieceCount[c][pt] * PieceStandardValue[pt];
+  return value;
 }
 
 

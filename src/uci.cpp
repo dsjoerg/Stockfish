@@ -68,6 +68,8 @@ namespace {
         return;
 
     pos.set(fen, Options["UCI_Chess960"], Threads.main());
+    sync_cout << pos.standardValue(WHITE) << " " << pos.standardValue(BLACK) << " " << pos.game_phase() << sync_endl;
+
     SetupStates = Search::StateStackPtr(new std::stack<StateInfo>());
 
     // Parse move list (if any)
@@ -221,7 +223,7 @@ string UCI::value(Value v) {
   stringstream ss;
 
   if (abs(v) < VALUE_MATE - MAX_PLY)
-      ss << "cp " << v * 100 / PawnValueEg;
+    ss << "cp " << v;
   else
       ss << "mate " << (v > 0 ? VALUE_MATE - v + 1 : -VALUE_MATE - v) / 2;
 

@@ -166,6 +166,7 @@ public:
   int rule50_count() const;
   Score psq_score() const;
   Value non_pawn_material(Color c) const;
+  int standardValue(Color c);
 
   // Position consistency check, for debugging
   bool pos_is_ok(int* failedStep = nullptr) const;
