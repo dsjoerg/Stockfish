@@ -682,7 +682,10 @@ namespace {
     // in the position object (material + piece square tables).
     // Score is computed from the point of view of white.
     score = pos.psq_score();
-
+    Value vv =  mg_value(score);
+    //    printf("score %d, vv %d", score, vv);
+    return (pos.side_to_move() == WHITE ? vv : -vv);
+    
     // Probe the material hash table
     ei.mi = Material::probe(pos);
     score += ei.mi->imbalance();
@@ -799,7 +802,7 @@ namespace {
 
   // Tracing function definitions
 
-  double Tracing::to_cp(Value v) { return double(v) / PawnValueEg; }
+  double Tracing::to_cp(Value v) { return double(v) / 100.0; }
 
   void Tracing::write(int idx, Color c, Score s) { scores[c][idx] = s; }
 

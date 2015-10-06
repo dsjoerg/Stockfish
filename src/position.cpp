@@ -167,12 +167,13 @@ void Position::init() {
       PieceValue[MG][make_piece(BLACK, pt)] = PieceValue[MG][pt];
       PieceValue[EG][make_piece(BLACK, pt)] = PieceValue[EG][pt];
 
-      Score v = make_score(PieceValue[MG][pt], PieceValue[EG][pt]);
+      //      Score v = make_score(PieceValue[MG][pt], PieceValue[EG][pt]);
+      Score v = make_score(100 * PieceStandardValue[pt], 100 * PieceStandardValue[pt]);
 
       for (Square s = SQ_A1; s <= SQ_H8; ++s)
       {
-         psq[WHITE][pt][ s] =  (v + PSQT[pt][s]);
-         psq[BLACK][pt][~s] = -(v + PSQT[pt][s]);
+        psq[WHITE][pt][ s] =  v;
+        psq[BLACK][pt][~s] = -v;
       }
   }
 }
