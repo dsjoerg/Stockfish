@@ -38,6 +38,8 @@ Value PieceValue[PHASE_NB][PIECE_NB] = {
 { VALUE_ZERO, PawnValueMg, KnightValueMg, BishopValueMg, RookValueMg, QueenValueMg },
 { VALUE_ZERO, PawnValueEg, KnightValueEg, BishopValueEg, RookValueEg, QueenValueEg } };
 
+Value PieceStandardValue[PIECE_NB] = { VALUE_ZERO, PawnValueEg, 3 * PawnValueEg, 3 * PawnValueEg, 5 * PawnValueEg, 9 * PawnValueEg };
+
 namespace Zobrist {
 
   Key psq[COLOR_NB][PIECE_TYPE_NB][SQUARE_NB];
@@ -399,6 +401,13 @@ void Position::set_state(StateInfo* si) const {
           si->nonPawnMaterial[c] += pieceCount[c][pt] * PieceValue[MG][pt];
 }
 
+// returns the value of the position in terms of the side to move
+Value Position::standardValue() const {
+  Value value = VALUE_ZERO;
+  for (PieceType pt = PAWN; pt <= QUEEN; ++pt)
+    value += (pieceCount[sideToMove][pt] - pieceCount[~sideToMove][pt]) * PieceStandardValue[pt];
+  return value;
+}
 
 /// Position::fen() returns a FEN representation of the position. In case of
 /// Chess960 the Shredder-FEN notation is used. This is mainly a debugging function.

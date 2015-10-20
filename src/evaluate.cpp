@@ -27,6 +27,7 @@
 #include "evaluate.h"
 #include "material.h"
 #include "pawns.h"
+#include "uci.h"
 
 namespace {
 
@@ -667,6 +668,9 @@ namespace {
     return make_score(bonus * weight * weight, 0);
   }
 
+  Value do_material_evaluate(const Position& pos) {
+    return pos.standardValue();
+  }
 
   // do_evaluate() is the evaluation entry point, called directly from evaluate()
 
@@ -835,8 +839,10 @@ namespace {
 
     std::memset(scores, 0, sizeof(scores));
 
+    Value material_v = do_material_evaluate(pos);
     Value v = do_evaluate<true>(pos);
-    v = pos.side_to_move() == WHITE ? v : -v; // White's point of view
+    v = pos.side_to_move() == WHITE ? v : -v;                            // White's point of view
+    material_v = pos.side_to_move() == WHITE ? material_v : -material_v; // White's point of view
 
     std::stringstream ss;
     ss << std::showpoint << std::noshowpos << std::fixed << std::setprecision(2)
@@ -861,6 +867,7 @@ namespace {
     print(ss, "Total", TOTAL);
 
     ss << "\nTotal Evaluation: " << to_cp(v) << " (white side)\n";
+    ss << "\nPure Material Evaluation: " << to_cp(material_v) << " (white side)\n";
 
     return ss.str();
   }
@@ -874,7 +881,17 @@ namespace Eval {
   /// of the position always from the point of view of the side to move.
 
   Value evaluate(const Position& pos) {
-    return do_evaluate<false>(pos);
+    if (Options["NonMaterialScale"] == 100) {
+      return do_evaluate<false>(pos);
+    } else if (Options["NonMaterialScale"] == 0) {
+      return do_material_evaluate(pos);
+    } else {
+      Value material_v = do_material_evaluate(pos);
+      Value v = do_evaluate<false>(pos);
+      Value non_material_v = v - material_v;
+    
+      return material_v + (Options["NonMaterialScale"] * non_material_v / 100);
+    }
   }
 
 

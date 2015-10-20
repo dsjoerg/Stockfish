@@ -96,6 +96,8 @@ public:
   void set(const std::string& fenStr, bool isChess960, Thread* th);
   const std::string fen() const;
 
+  Value standardValue() const;
+
   // Position representation
   Bitboard pieces() const;
   Bitboard pieces(PieceType pt) const;
